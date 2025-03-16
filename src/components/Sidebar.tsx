@@ -2,7 +2,8 @@
 "use client";
 
 import React, { useState } from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import { Button } from '@/components/ui/button';
 import { LayoutDashboard, TableProperties, BookOpen, PieChart, Settings, Menu as MenuIcon, ChevronRight, ChevronLeft } from 'lucide-react';
@@ -14,7 +15,7 @@ interface SidebarProps {
 
 const Sidebar = ({ className }: SidebarProps) => {
   const [collapsed, setCollapsed] = useState(false);
-  const location = useLocation();
+  const pathname = usePathname();
 
   const toggleSidebar = () => setCollapsed(!collapsed);
 
@@ -23,31 +24,31 @@ const Sidebar = ({ className }: SidebarProps) => {
       title: 'Dashboard', 
       icon: <LayoutDashboard size={20} />, 
       path: '/', 
-      active: location.pathname === '/' 
+      active: pathname === '/' 
     },
     { 
       title: 'Tables & Orders', 
       icon: <TableProperties size={20} />, 
       path: '/tables', 
-      active: location.pathname === '/tables' 
+      active: pathname === '/tables' 
     },
     { 
       title: 'Menu Management', 
       icon: <MenuIcon size={20} />, 
       path: '/menu', 
-      active: location.pathname === '/menu' 
+      active: pathname === '/menu' 
     },
     { 
       title: 'Reports', 
       icon: <PieChart size={20} />, 
       path: '/reports', 
-      active: location.pathname === '/reports' 
+      active: pathname === '/reports' 
     },
     { 
       title: 'Settings', 
       icon: <Settings size={20} />, 
       path: '/settings', 
-      active: location.pathname === '/settings' 
+      active: pathname === '/settings' 
     },
   ];
 
@@ -79,7 +80,7 @@ const Sidebar = ({ className }: SidebarProps) => {
           {navItems.map((item) => (
             <li key={item.title}>
               <Link 
-                to={item.path} 
+                href={item.path} 
                 className={cn(
                   'flex items-center px-4 py-2 rounded-md hover:bg-sidebar-accent transition-colors',
                   item.active && 'bg-sidebar-accent',

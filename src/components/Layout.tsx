@@ -4,7 +4,7 @@
 import React, { useState } from 'react';
 import Sidebar from './Sidebar';
 import Navbar from './Navbar';
-import { useLocation } from 'react-router-dom';
+import { useRouter, usePathname } from 'next/navigation';
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -12,16 +12,16 @@ interface LayoutProps {
 
 const Layout: React.FC<LayoutProps> = ({ children }) => {
   const [sidebarOpen, setSidebarOpen] = useState(true);
-  const location = useLocation();
+  const pathname = usePathname();
 
   // Don't render layout for 404 page
-  if (location.pathname === '/404') {
+  if (pathname === '/404') {
     return <>{children}</>;
   }
 
   return (
     <div className="flex h-screen bg-gray-50">
-      <Sidebar className={undefined} />
+      <Sidebar />
       <div className="flex-1 flex flex-col overflow-hidden">
         <Navbar />
         <main className="flex-1 overflow-x-hidden overflow-y-auto bg-gray-50 p-6">

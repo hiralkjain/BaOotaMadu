@@ -1,4 +1,6 @@
 
+"use client";
+
 import React from 'react';
 import { Bell, Search, ChevronDown, User } from 'lucide-react';
 import { 

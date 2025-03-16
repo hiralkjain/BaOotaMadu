@@ -3,6 +3,13 @@
 const nextConfig = {
   reactStrictMode: true,
   swcMinify: true,
+  images: {
+    domains: ['images.unsplash.com'],
+  },
+  // Enable experimental app directory
+  experimental: {
+    appDir: true,
+  },
 };
 
 module.exports = nextConfig;
