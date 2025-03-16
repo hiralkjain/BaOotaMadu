@@ -1,11 +1,11 @@
+
 "use client";
 
-import React from 'react';
-import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import React, { useState } from 'react';
+import { Link, useLocation } from 'react-router-dom';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import { Button } from '@/components/ui/button';
-import { LayoutDashboard, TableProperties, BookOpen, PieChart, Settings, Menu as MenuIcon } from 'lucide-react';
+import { LayoutDashboard, TableProperties, BookOpen, PieChart, Settings, Menu as MenuIcon, ChevronRight, ChevronLeft } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 interface SidebarProps {
@@ -14,6 +14,7 @@ interface SidebarProps {
 
 const Sidebar = ({ className }: SidebarProps) => {
   const [collapsed, setCollapsed] = useState(false);
+  const location = useLocation();
 
   const toggleSidebar = () => setCollapsed(!collapsed);
 
@@ -22,31 +23,31 @@ const Sidebar = ({ className }: SidebarProps) => {
       title: 'Dashboard', 
       icon: <LayoutDashboard size={20} />, 
       path: '/', 
-      active: true 
+      active: location.pathname === '/' 
     },
     { 
       title: 'Tables & Orders', 
       icon: <TableProperties size={20} />, 
       path: '/tables', 
-      active: false 
+      active: location.pathname === '/tables' 
     },
     { 
       title: 'Menu Management', 
       icon: <MenuIcon size={20} />, 
       path: '/menu', 
-      active: false 
+      active: location.pathname === '/menu' 
     },
     { 
       title: 'Reports', 
       icon: <PieChart size={20} />, 
       path: '/reports', 
-      active: false 
+      active: location.pathname === '/reports' 
     },
     { 
       title: 'Settings', 
       icon: <Settings size={20} />, 
       path: '/settings', 
-      active: false 
+      active: location.pathname === '/settings' 
     },
   ];
 
@@ -80,13 +81,13 @@ const Sidebar = ({ className }: SidebarProps) => {
               <Link 
                 to={item.path} 
                 className={cn(
-                  'nav-item',
-                  item.active && 'active',
+                  'flex items-center px-4 py-2 rounded-md hover:bg-sidebar-accent transition-colors',
+                  item.active && 'bg-sidebar-accent',
                   collapsed && 'justify-center px-2'
                 )}
               >
                 <span>{item.icon}</span>
-                {!collapsed && <span>{item.title}</span>}
+                {!collapsed && <span className="ml-3">{item.title}</span>}
               </Link>
             </li>
           ))}
