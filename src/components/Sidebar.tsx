@@ -1,15 +1,11 @@
+"use client";
 
-import { useState } from 'react';
-import { Link } from 'react-router-dom';
-import { 
-  LayoutDashboard, 
-  Utensils, 
-  ClipboardList, 
-  BarChart3, 
-  Settings, 
-  ChevronLeft, 
-  ChevronRight 
-} from 'lucide-react';
+import React from 'react';
+import Link from 'next/link';
+import { usePathname } from 'next/navigation';
+import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
+import { Button } from '@/components/ui/button';
+import { LayoutDashboard, TableProperties, BookOpen, PieChart, Settings, Menu as MenuIcon } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 interface SidebarProps {
@@ -30,19 +26,19 @@ const Sidebar = ({ className }: SidebarProps) => {
     },
     { 
       title: 'Tables & Orders', 
-      icon: <ClipboardList size={20} />, 
+      icon: <TableProperties size={20} />, 
       path: '/tables', 
       active: false 
     },
     { 
       title: 'Menu Management', 
-      icon: <Utensils size={20} />, 
+      icon: <MenuIcon size={20} />, 
       path: '/menu', 
       active: false 
     },
     { 
       title: 'Reports', 
-      icon: <BarChart3 size={20} />, 
+      icon: <PieChart size={20} />, 
       path: '/reports', 
       active: false 
     },

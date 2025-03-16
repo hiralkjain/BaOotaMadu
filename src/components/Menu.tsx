@@ -1,3 +1,4 @@
+"use client";
 
 import { useState } from 'react';
 import { Plus, Search, FilterX, Upload } from 'lucide-react';
@@ -9,7 +10,7 @@ import {
   DialogDescription, 
   DialogFooter, 
   DialogHeader, 
-  DialogTitle,
+  DialogTitle, 
   DialogTrigger
 } from '@/components/ui/dialog';
 import { 
