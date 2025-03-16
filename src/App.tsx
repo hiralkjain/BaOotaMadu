@@ -8,6 +8,7 @@ import Layout from "./components/Layout";
 import Dashboard from "./pages/Dashboard";
 import Tables from "./pages/Tables";
 import Menu from "./pages/Menu";
+import Reports from "./pages/Reports";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -40,6 +41,14 @@ const App = () => (
             element={
               <Layout>
                 <Menu />
+              </Layout>
+            } 
+          />
+          <Route 
+            path="/reports" 
+            element={
+              <Layout>
+                <Reports />
               </Layout>
             } 
           />

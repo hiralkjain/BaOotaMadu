@@ -1,11 +1,28 @@
 
 import { useState } from 'react';
-import { Plus, Search, FilterX } from 'lucide-react';
+import { Plus, Search, FilterX, Upload } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { 
+  Dialog, 
+  DialogContent, 
+  DialogDescription, 
+  DialogFooter, 
+  DialogHeader, 
+  DialogTitle 
+} from '@/components/ui/dialog';
+import { 
+  Form, 
+  FormControl, 
+  FormField, 
+  FormItem, 
+  FormLabel, 
+  FormMessage 
+} from '@/components/ui/form';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import MenuItemCard from '@/components/MenuItemCard';
 import { useToast } from '@/hooks/use-toast';
+import { useForm } from 'react-hook-form';
 
 interface MenuItem {
   id: string;
@@ -16,13 +33,19 @@ interface MenuItem {
   image: string;
 }
 
+interface MenuItemForm {
+  name: string;
+  category: string;
+  price: string;
+  image: string;
+}
+
 const Menu = () => {
   const { toast } = useToast();
   const [searchQuery, setSearchQuery] = useState('');
   const [categoryFilter, setCategoryFilter] = useState('all');
-
-  // Mock data
-  const menuItems: MenuItem[] = [
+  const [openAddDialog, setOpenAddDialog] = useState(false);
+  const [menuItems, setMenuItems] = useState<MenuItem[]>([
     {
       id: '1',
       name: 'Classic Cheeseburger',
@@ -71,9 +94,25 @@ const Menu = () => {
       available: true,
       image: 'https://images.unsplash.com/photo-1573140247632-f8fd74997d5c?auto=format&fit=crop&q=80&w=1000',
     },
-  ];
+  ]);
+
+  const form = useForm<MenuItemForm>({
+    defaultValues: {
+      name: '',
+      category: 'Main Course',
+      price: '',
+      image: 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&q=80&w=1000',
+    },
+  });
 
   const categories = ['All', 'Main Course', 'Starters', 'Desserts'];
+  
+  const placeholderImages = [
+    'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&q=80&w=1000',
+    'https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?auto=format&fit=crop&q=80&w=1000',
+    'https://images.unsplash.com/photo-1512621776951-a57141f2eefd?auto=format&fit=crop&q=80&w=1000',
+    'https://images.unsplash.com/photo-1484723091739-30a097e8f929?auto=format&fit=crop&q=80&w=1000',
+  ];
 
   const handleEdit = (id: string) => {
     toast({
@@ -83,24 +122,60 @@ const Menu = () => {
   };
 
   const handleDelete = (id: string) => {
+    setMenuItems(prevItems => prevItems.filter(item => item.id !== id));
+    
     toast({
       title: "Delete Menu Item",
-      description: `Item ${id} will be deleted`,
+      description: `Item has been deleted`,
       variant: "destructive",
     });
   };
 
   const handleToggleAvailability = (id: string, available: boolean) => {
+    setMenuItems(prevItems => 
+      prevItems.map(item => 
+        item.id === id ? { ...item, available } : item
+      )
+    );
+    
     toast({
       title: `Item ${available ? 'Available' : 'Unavailable'}`,
-      description: `Item ${id} is now ${available ? 'available' : 'unavailable'}`,
+      description: `Item is now ${available ? 'available' : 'unavailable'}`,
     });
   };
 
   const handleAddMenuItem = () => {
+    setOpenAddDialog(true);
+  };
+
+  const onSubmit = (data: MenuItemForm) => {
+    const price = parseFloat(data.price);
+    
+    if (isNaN(price) || price <= 0) {
+      toast({
+        title: "Invalid Price",
+        description: "Please enter a valid price",
+        variant: "destructive",
+      });
+      return;
+    }
+    
+    const newItem: MenuItem = {
+      id: Date.now().toString(),
+      name: data.name,
+      category: data.category,
+      price: price,
+      available: true,
+      image: data.image,
+    };
+    
+    setMenuItems(prev => [...prev, newItem]);
+    form.reset();
+    setOpenAddDialog(false);
+    
     toast({
-      title: "Add Menu Item",
-      description: "Opening form to add a new menu item",
+      title: "Menu Item Added",
+      description: `${data.name} has been added to the menu`,
     });
   };
 
@@ -118,10 +193,120 @@ const Menu = () => {
           <h1 className="text-2xl font-bold">Menu Management</h1>
           <p className="text-gray-500 mt-1">Add, edit and manage your menu items</p>
         </div>
-        <Button className="bg-orange hover:bg-orange/90 text-white" onClick={handleAddMenuItem}>
-          <Plus size={16} className="mr-2" />
-          Add Item
-        </Button>
+        <Dialog open={openAddDialog} onOpenChange={setOpenAddDialog}>
+          <DialogTrigger asChild>
+            <Button className="bg-orange hover:bg-orange/90 text-white" onClick={handleAddMenuItem}>
+              <Plus size={16} className="mr-2" />
+              Add Item
+            </Button>
+          </DialogTrigger>
+          <DialogContent className="sm:max-w-[425px]">
+            <DialogHeader>
+              <DialogTitle>Add Menu Item</DialogTitle>
+              <DialogDescription>
+                Fill in the details to add a new item to your menu.
+              </DialogDescription>
+            </DialogHeader>
+            <Form {...form}>
+              <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+                <FormField
+                  control={form.control}
+                  name="name"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Name</FormLabel>
+                      <FormControl>
+                        <Input placeholder="Item name" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="category"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Category</FormLabel>
+                      <Select 
+                        onValueChange={field.onChange} 
+                        defaultValue={field.value}
+                      >
+                        <FormControl>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Select category" />
+                          </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                          {categories.filter(c => c !== 'All').map((category) => (
+                            <SelectItem key={category} value={category}>
+                              {category}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="price"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Price ($)</FormLabel>
+                      <FormControl>
+                        <Input type="number" step="0.01" min="0" placeholder="0.00" {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="image"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Image</FormLabel>
+                      <div className="grid grid-cols-2 gap-2">
+                        {placeholderImages.map((img, index) => (
+                          <div 
+                            key={index}
+                            className={`relative cursor-pointer rounded-md overflow-hidden h-20 ${field.value === img ? 'ring-2 ring-primary' : ''}`}
+                            onClick={() => field.onChange(img)}
+                          >
+                            <img 
+                              src={img} 
+                              alt={`Food ${index}`} 
+                              className="w-full h-full object-cover" 
+                            />
+                          </div>
+                        ))}
+                      </div>
+                      <p className="text-xs text-gray-500 mt-2">
+                        Click on an image to select it
+                      </p>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <DialogFooter>
+                  <Button 
+                    type="button" 
+                    variant="outline" 
+                    onClick={() => {
+                      form.reset();
+                      setOpenAddDialog(false);
+                    }}
+                  >
+                    Cancel
+                  </Button>
+                  <Button type="submit">Add Item</Button>
+                </DialogFooter>
+              </form>
+            </Form>
+          </DialogContent>
+        </Dialog>
       </div>
       
       <div className="flex flex-col md:flex-row gap-4">
