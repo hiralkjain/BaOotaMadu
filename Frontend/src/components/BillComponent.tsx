@@ -68,7 +68,7 @@ const BillComponent = ({ order, tableNumber, onClose, onPrint }: BillComponentPr
       return;
     }
     
-    // @ts-ignore
+    //@ts-ignore
     Email.send({
       Host: "smtp.gmail.com",
       Username: "jayanthdn6073@gmail.com",

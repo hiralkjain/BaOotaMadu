@@ -22,74 +22,84 @@ import { addActivity } from "@/store/slices/dashboardSlice";
 import QRCodeGenerator from "@/components/QRCodeGenerator";
 
 //const API_BASE = "http://localhost:3001";
-const API_BASE = import.meta.env.VITE_API_BASE || "https://baootamadu.onrender.com/";
+const API_BASE =
+  import.meta.env.VITE_API_BASE || "https://baootamadu.onrender.com/";
 
 // QR Code Print Component
 const QRCodePrintComponent = ({ tableId, tableNumber, restaurantId }) => {
-  const [qrCodeDataUrl, setQrCodeDataUrl] = useState('');
-  
+  const [qrCodeDataUrl, setQrCodeDataUrl] = useState("");
+
   useEffect(() => {
     // Generate QR code data URL for printing using the EXACT same logic as QRCodeGenerator
     const generateQRCodeForPrint = async () => {
       try {
         // Import QRCode library dynamically
-        const QRCode = await import('qrcode');
-        
+        const QRCode = await import("qrcode");
+
         // Use the EXACT same URL format as your QRCodeGenerator component
-        const baseUrl = import.meta.env.VITE_API_BASE_Frontend || "https://ba-oota-madu.vercel.app/";
+        const baseUrl =
+          import.meta.env.VITE_API_BASE_Frontend ||
+          "https://ba-oota-madu.vercel.app/";
         const qrValue = `${baseUrl}/user?table=${tableId}&restaurant=${restaurantId}`;
-        
-        console.log('Print QR URL:', qrValue); // Debug log
-        
+
+        console.log("Print QR URL:", qrValue); // Debug log
+
         const dataUrl = await QRCode.toDataURL(qrValue, {
           width: 200,
           margin: 2,
           color: {
-            dark: '#000000',
-            light: '#FFFFFF'
-          }
+            dark: "#000000",
+            light: "#FFFFFF",
+          },
         });
         setQrCodeDataUrl(dataUrl);
       } catch (error) {
-        console.error('Error generating QR code:', error);
+        console.error("Error generating QR code:", error);
       }
     };
-    
+
     generateQRCodeForPrint();
   }, [tableId, restaurantId]);
 
   return (
-    <div className="qr-print-item" style={{ 
-      width: '48%', 
-      marginBottom: '20px', 
-      pageBreakInside: 'avoid',
-      border: '2px solid #e5e7eb',
-      borderRadius: '8px',
-      padding: '16px',
-      textAlign: 'center',
-      backgroundColor: 'white'
-    }}>
-      <h3 style={{ margin: '0 0 12px 0', fontSize: '18px', fontWeight: 'bold' }}>
+    <div
+      className="qr-print-item"
+      style={{
+        width: "48%",
+        marginBottom: "20px",
+        pageBreakInside: "avoid",
+        border: "2px solid #e5e7eb",
+        borderRadius: "8px",
+        padding: "16px",
+        textAlign: "center",
+        backgroundColor: "white",
+      }}
+    >
+      <h3
+        style={{ margin: "0 0 12px 0", fontSize: "18px", fontWeight: "bold" }}
+      >
         Table {tableNumber}
       </h3>
       {qrCodeDataUrl && (
-        <img 
-          src={qrCodeDataUrl} 
+        <img
+          src={qrCodeDataUrl}
           alt={`QR Code for Table ${tableNumber}`}
-          style={{ 
-            width: '160px', 
-            height: '160px', 
-            margin: '0 auto',
-            display: 'block'
+          style={{
+            width: "160px",
+            height: "160px",
+            margin: "0 auto",
+            display: "block",
           }}
         />
       )}
-      <p style={{ 
-        margin: '12px 0 0 0', 
-        fontSize: '12px', 
-        color: '#6b7280',
-        fontWeight: '500'
-      }}>
+      <p
+        style={{
+          margin: "12px 0 0 0",
+          fontSize: "12px",
+          color: "#6b7280",
+          fontWeight: "500",
+        }}
+      >
         Scan to view menu
       </p>
     </div>
@@ -109,7 +119,8 @@ const PrintAllQR = ({ tables, restaurantId, onClose }) => {
           body * {
             visibility: hidden;
           }
-          .print-container, .print-container * {
+          .print-container,
+          .print-container * {
             visibility: visible;
           }
           .print-container {
@@ -136,11 +147,14 @@ const PrintAllQR = ({ tables, restaurantId, onClose }) => {
           }
         }
       `}</style>
-      
+
       <div className="no-print mb-4 flex justify-between items-center">
         <h3 className="text-lg font-semibold">Print Preview - All QR Codes</h3>
         <div className="space-x-2">
-          <Button onClick={handlePrint} className="bg-orange hover:bg-orange/90">
+          <Button
+            onClick={handlePrint}
+            className="bg-orange hover:bg-orange/90"
+          >
             <Printer size={16} className="mr-2" />
             Print QR Codes
           </Button>
@@ -151,26 +165,36 @@ const PrintAllQR = ({ tables, restaurantId, onClose }) => {
       </div>
 
       <div className="print-container">
-        {Array.from({ length: Math.ceil(tables.length / 4) }, (_, pageIndex) => (
-          <div key={pageIndex} className="qr-print-page" style={{
-            display: 'flex',
-            flexWrap: 'wrap',
-            justifyContent: 'space-between',
-            alignContent: 'flex-start',
-            padding: '20px',
-            minHeight: '297mm',
-            pageBreakAfter: pageIndex === Math.ceil(tables.length / 4) - 1 ? 'avoid' : 'always'
-          }}>
-            {tables.slice(pageIndex * 4, (pageIndex + 1) * 4).map((table) => (
-              <QRCodePrintComponent
-                key={table.id}
-                tableId={table.id}
-                tableNumber={table.number}
-                restaurantId={restaurantId}
-              />
-            ))}
-          </div>
-        ))}
+        {Array.from(
+          { length: Math.ceil(tables.length / 4) },
+          (_, pageIndex) => (
+            <div
+              key={pageIndex}
+              className="qr-print-page"
+              style={{
+                display: "flex",
+                flexWrap: "wrap",
+                justifyContent: "space-between",
+                alignContent: "flex-start",
+                padding: "20px",
+                minHeight: "297mm",
+                pageBreakAfter:
+                  pageIndex === Math.ceil(tables.length / 4) - 1
+                    ? "avoid"
+                    : "always",
+              }}
+            >
+              {tables.slice(pageIndex * 4, (pageIndex + 1) * 4).map((table) => (
+                <QRCodePrintComponent
+                  key={table.id}
+                  tableId={table.id}
+                  tableNumber={table.number}
+                  restaurantId={restaurantId}
+                />
+              ))}
+            </div>
+          )
+        )}
       </div>
     </div>
   );
@@ -187,7 +211,9 @@ const Tables = () => {
   const [showQRDialog, setShowQRDialog] = useState(false);
   const [selectedTableId, setSelectedTableId] = useState<string | null>(null);
   const [showOrderDialog, setShowOrderDialog] = useState(false);
-  const [selectedTableForOrder, setSelectedTableForOrder] = useState<string | null>(null);
+  const [selectedTableForOrder, setSelectedTableForOrder] = useState<
+    string | null
+  >(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [restaurantId, setRestaurantId] = useState<string | null>(null);
   const [showPrintAllQR, setShowPrintAllQR] = useState(false);
@@ -221,7 +247,8 @@ const Tables = () => {
         headers: { "Content-Type": "application/json" },
       });
       const data = await response.json();
-      if (!response.ok) throw new Error(data.message || "Failed to occupy table");
+      if (!response.ok)
+        throw new Error(data.message || "Failed to occupy table");
       return data;
     },
     clearTable: async (tableId: string) => {
@@ -259,13 +286,43 @@ const Tables = () => {
       return true;
     },
   };
+  const handleToggleTableStatus = async (
+    tableId: string,
+    currentStatus: string
+  ) => {
+    try {
+      if (currentStatus === "available") {
+        await tableBackendActions.occupyTable(tableId);
+        toast({
+          title: "Table Occupied",
+          description: "Table marked as occupied",
+        });
+      } else {
+        await tableBackendActions.clearTable(tableId);
+        toast({
+          title: "Table Available",
+          description: "Table marked as available",
+        });
+      }
+
+      fetchTables(); // refresh state
+    } catch (err: any) {
+      toast({
+        title: "Error",
+        description: err.message || "Failed to update table status",
+        variant: "destructive",
+      });
+    }
+  };
 
   // Fetch tables from backend
   const fetchTables = async () => {
     if (!restaurantId) return;
 
     try {
-      const res = await fetch(`${API_BASE}/tables?restaurant_id=${restaurantId}`);
+      const res = await fetch(
+        `${API_BASE}/tables?restaurant_id=${restaurantId}`
+      );
       if (!res.ok) throw new Error("Failed to fetch tables");
       const data = await res.json();
       dispatch(
@@ -407,14 +464,16 @@ const Tables = () => {
   if (!restaurantId) {
     return (
       <div className="flex items-center justify-center h-64">
-        <p className="text-red-500">Restaurant ID not found. Please check your login link.</p>
+        <p className="text-red-500">
+          Restaurant ID not found. Please check your login link.
+        </p>
       </div>
     );
   }
 
   if (showPrintAllQR) {
     return (
-      <PrintAllQR 
+      <PrintAllQR
         tables={tables}
         restaurantId={restaurantId}
         onClose={() => setShowPrintAllQR(false)}
@@ -432,7 +491,7 @@ const Tables = () => {
           </p>
         </div>
         <div className="flex space-x-2">
-          <Button 
+          <Button
             onClick={() => setShowPrintAllQR(true)}
             variant="outline"
             className="border-orange text-orange hover:bg-orange hover:text-white"
@@ -463,7 +522,10 @@ const Tables = () => {
                 />
               </div>
               <DialogFooter>
-                <Button variant="outline" onClick={() => setOpenAddDialog(false)}>
+                <Button
+                  variant="outline"
+                  onClick={() => setOpenAddDialog(false)}
+                >
                   Cancel
                 </Button>
                 <Button onClick={handleAddTable}>Add Table</Button>
@@ -481,7 +543,8 @@ const Tables = () => {
             <TabsTrigger value="occupied">Occupied</TabsTrigger>
           </TabsList>
           <div className="text-sm text-gray-500">
-            {filteredTables.length} table{filteredTables.length !== 1 ? "s" : ""}
+            {filteredTables.length} table
+            {filteredTables.length !== 1 ? "s" : ""}
           </div>
         </div>
 
@@ -495,11 +558,12 @@ const Tables = () => {
                   tableNumber={table.number}
                   status={table.status}
                   orderItems={table.items || 0}
-                  timeElapsed={undefined}
                   onViewOrder={() => handleViewOrder(table.id)}
                   onGenerateQR={() => handleGenerateQR(table.id)}
                   onDelete={() => handleDeleteTable(table.id)}
-                  hideAvailabilityToggle
+                  onToggleStatus={() =>
+                    handleToggleTableStatus(table.id, table.status)
+                  }
                 />
               ))}
             </div>
